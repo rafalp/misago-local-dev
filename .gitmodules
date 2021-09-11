@@ -1,0 +1,4 @@
+[submodule "misago"]
+	path = misago
+	url = git@github.com:rafalp/Misago.git
+	branch = starlette
