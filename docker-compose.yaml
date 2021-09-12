@@ -1,0 +1,51 @@
+# This compose setup is only meant for local development of Misago itself
+# This is not for running your Misago site in docker
+version: "3.0"
+services:
+  postgres:
+    image: postgres:11
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=misago
+      - POSTGRES_PASSWORD=misago
+    ports:
+      - '127.0.0.1:5432:5432'
+  redis:
+    image: redis:5
+    restart: unless-stopped
+  misago:
+    build: misago
+    restart: unless-stopped
+    environment:
+      # Deps
+      - INSTALL_DEV_DEPS=True
+      # Misago
+      - MISAGO_DEBUG=True
+      - MISAGO_DATABASE_URL=postgresql://misago:misago@postgres/misago
+      - MISAGO_TEST_DATABASE_NAME=test
+      - MISAGO_CACHE_URL=locmem://0
+      - MISAGO_PUBSUB_URL=redis://redis:6379
+      - MISAGO_STATIC_ROOT=/app/media
+      - MISAGO_MEDIA_ROOT=/app/static
+      - MISAGO_ENABLED_PLUGINS=/app/plugins.txt
+      # Superuser
+      - SUPERUSER_USERNAME=Admin
+      - SUPERUSER_EMAIL=admin@example.com
+      - SUPERUSER_PASSWORD=password
+    ports:
+      # Map port 8000 in the container to port 8000 on the host
+      # This way we can access the forum through http://localhost:8000
+      - "${MISAGO_PORT:-8000}:8000"
+    depends_on:
+      - postgres
+      - redis
+    tty: true
+    volumes:
+      # Map in the project files into the container
+      # This makes sure files in the container updates on the fly as we were working locally
+      - ./media:/app/media:Z
+      - ./misago/misago:/app/misago:Z
+      - ./misago/bootstrap:/app/bootstrap:Z
+      - ./plugins:/app/plugins:Z
+      - ./scripts:/app/scripts:Z
+      - ./static:/app/static:Z
