@@ -1,0 +1,14 @@
+FROM node:16-slim
+
+ADD ./client/ /client/
+ADD ./plugins/ /client/plugins/
+
+WORKDIR /client/
+
+RUN npm install
+RUN ./bootstrap plugins
+RUN npm run build
+
+EXPOSE 3000
+
+CMD npm run start

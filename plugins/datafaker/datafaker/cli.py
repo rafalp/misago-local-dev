@@ -2,7 +2,6 @@ import random
 
 import click
 from faker import Faker
-
 from misago.categories.get import get_all_categories
 from misago.cli import cli
 from misago.threads.models import Post, Thread

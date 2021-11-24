@@ -174,7 +174,7 @@ clear() {
     read confirmation
     if [[ $confirmation = "y" ]]; then
         docker-compose stop
-        docker-compose down --remove-orphans
+        docker-compose down --volumes --remove-orphans
         find media -mindepth 1 ! -name '.gitignore' -delete
     else
         echo "Operation canceled."
@@ -232,11 +232,6 @@ txpull() {
 # Push translation sources to transifex
 txpush() {
     tx push --source
-}
-
-# Shortcut for starting bash session in running container
-run_bash() {
-    docker exec -it misago_misago_1 bash
 }
 
 # Shortcut for docker-compose run --rm misago python manage.py
@@ -315,7 +310,7 @@ if [[ $1 ]]; then
         txpush
         txpull
     elif [[ $1 = "bash" ]]; then
-        run_bash
+        docker-compose run --rm misago bash
     elif [[ $1 = "misagocli.py" ]]; then
         run_misagoclipy $@
     elif [[ $1 = "run" ]]; then

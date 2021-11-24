@@ -2,6 +2,20 @@
 # This is not for running your Misago site in docker
 version: "3.0"
 services:
+  client:
+    build:
+        context: .
+        dockerfile: Dockerfile.client
+    ports:
+      # Map port 3000 in the container to port 3000 on the host
+      # This way we can access the forum client through http://localhost:3000
+      - "${MISAGO_CLIENT_PORT:-3000}:3000"
+    tty: true
+    volumes:
+      # Map in the project files into the container
+      # This makes sure files in the container updates on the fly as we were working locally
+      - ./client/src:/client/src:Z
+      - ./plugins:/client/plugins:Z
   postgres:
     image: postgres:11
     restart: unless-stopped
@@ -14,7 +28,9 @@ services:
     image: redis:5
     restart: unless-stopped
   misago:
-    build: misago
+    build:
+        context: .
+        dockerfile: Dockerfile.misago
     restart: unless-stopped
     environment:
       # Deps
@@ -27,6 +43,7 @@ services:
       - MISAGO_PUBSUB_URL=redis://redis:6379
       - MISAGO_STATIC_ROOT=/app/media
       - MISAGO_MEDIA_ROOT=/app/static
+      - MISAGO_PLUGINS_ROOT=/app/plugins
       - MISAGO_ENABLED_PLUGINS=/app/plugins.txt
       # Superuser
       - SUPERUSER_USERNAME=Admin
@@ -35,7 +52,7 @@ services:
     ports:
       # Map port 8000 in the container to port 8000 on the host
       # This way we can access the forum through http://localhost:8000
-      - "${MISAGO_PORT:-8000}:8000"
+      - "${MISAGO_SERVER_PORT:-8000}:8000"
     depends_on:
       - postgres
       - redis
@@ -47,5 +64,4 @@ services:
       - ./misago/misago:/app/misago:Z
       - ./misago/bootstrap:/app/bootstrap:Z
       - ./plugins:/app/plugins:Z
-      - ./scripts:/app/scripts:Z
       - ./static:/app/static:Z
