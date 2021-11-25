@@ -1,4 +1,5 @@
-# misago-local-dev
+misago-local-dev
+================
 
 This repository contains local development environment for Misago.
 
