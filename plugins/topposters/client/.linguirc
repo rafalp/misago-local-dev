@@ -1,0 +1,12 @@
+{
+  "locales": ["en", "pl"],
+  "rootDir": "./src/",
+  "format": "po",
+  "sourceLocale": "en",
+  "compileNamespace": "ts",
+  "extractBabelOptions": {
+    "presets": [
+      "@babel/preset-typescript"
+    ]
+  }
+}
