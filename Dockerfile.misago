@@ -7,6 +7,7 @@ ENV PYTHONUNBUFFERED 1
 
 # Add requirements and install them
 ADD ./misago/.pylintrc /app/
+ADD ./misago/babel.cfg /app/
 ADD ./misago/bootstrap /app/
 ADD ./misago/misagocli.py /app/
 ADD ./misago/mypy.ini /app/

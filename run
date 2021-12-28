@@ -194,33 +194,12 @@ test() {
 
 # Make messages
 makemessages() {
-    docker-compose run --rm --no-deps misago ./dev makemessages_in_docker $1
-}
-
-# Docker part of makemessages
-makemessages_in_docker() {
-    require_in_docker
-    
-    echo "Extracting messages for $1 language:"
-    cd ./misago
-
-    echo "Processing .py and .html files..."
-    django-admin.py makemessages -l $1 -e html,txt,py > /dev/null
-
-    echo "Processing .js files..."
-    django-admin.py makemessages -l $1 -d djangojs > /dev/null
+    docker-compose run --rm --no-deps misago ./bootstrap makemessages "${1}"
 }
 
 # Compile messages
 compilemessages() {
-    docker-compose run --rm --no-deps misago ./dev compilemessages_in_docker
-}
-
-# Docker part of compile messages
-compilemessages_in_docker() {
-    require_in_docker
-    cd ./misago
-    django-admin.py compilemessages
+    docker-compose run --rm --no-deps misago pybabel compile -d misago/locale
 }
 
 # Pull translation files from transifex
@@ -295,12 +274,8 @@ if [[ $1 ]]; then
         pylint misago plugins --extension-pkg-whitelist=pydantic
     elif [[ $1 = "makemessages" ]]; then
         makemessages ${2:-en}
-    elif [[ $1 = "makemessages_in_docker" ]]; then
-        makemessages_in_docker $2
     elif [[ $1 = "compilemessages" ]]; then
         compilemessages
-    elif [[ $1 = "compilemessages_in_docker" ]]; then
-        compilemessages_in_docker
     elif [[ $1 = "txpull" ]]; then
         txpull
     elif [[ $1 = "txpush" ]]; then
