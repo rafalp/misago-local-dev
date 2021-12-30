@@ -273,7 +273,7 @@ if [[ $1 ]]; then
     elif [[ $1 = "pylint" ]]; then
         pylint misago plugins --extension-pkg-whitelist=pydantic
     elif [[ $1 = "makemessages" ]]; then
-        makemessages ${2:-en}
+        makemessages $2
     elif [[ $1 = "compilemessages" ]]; then
         compilemessages
     elif [[ $1 = "txpull" ]]; then
