@@ -7,7 +7,6 @@ from sqlalchemy import select
 
 from misago.categories.get import get_all_categories
 from misago.database import database
-from misago.database.queries import update
 from misago.tables import users
 from misago.threads.models import Post, Thread
 from misago.users.models import User
@@ -67,7 +66,9 @@ async def move_existing_users_to_past(days: int):
     query = select([users.c.id, users.c.joined_at])
     for row in await database.fetch_all(query):
         past_joined_at = row["joined_at"] - timedelta(days=days)
-        await update(users, row["id"], joined_at=past_joined_at)
+        await database.execute(
+            users.update(None).values(joined_at=past_joined_at).where(users.c.id == row["id"])
+        )
 
 
 def get_day_actions_dates(start_date, days_ago, daily_actions):
