@@ -267,11 +267,11 @@ if [[ $1 ]]; then
         test $@
     elif [[ $1 = "lint" ]]; then
         mypy misago --ignore-missing-imports
-        pylint misago plugins --extension-pkg-whitelist=pydantic
+        pylint misago --extension-pkg-whitelist=pydantic
     elif [[ $1 = "mypy" ]]; then
         mypy misago --ignore-missing-imports
     elif [[ $1 = "pylint" ]]; then
-        pylint misago plugins --extension-pkg-whitelist=pydantic
+        pylint misago --extension-pkg-whitelist=pydantic
     elif [[ $1 = "makemessages" ]]; then
         makemessages $2
     elif [[ $1 = "compilemessages" ]]; then
