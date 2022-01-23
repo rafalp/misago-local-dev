@@ -9,6 +9,7 @@ ENV PYTHONUNBUFFERED 1
 ADD ./misago/.pylintrc /app/
 ADD ./misago/babel.cfg /app/
 ADD ./misago/bootstrap /app/
+ADD ./misago/conftest.py /app/
 ADD ./misago/misagocli.py /app/
 ADD ./misago/mypy.ini /app/
 ADD ./misago/pytest.ini /app/
