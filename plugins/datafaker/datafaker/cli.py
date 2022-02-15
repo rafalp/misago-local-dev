@@ -77,6 +77,7 @@ async def createfakethreads(count):
         starter, starter_name = await get_random_poster(fake)
 
         thread = await create_fake_thread(
+            fake,
             category,
             starter=starter,
             starter_name=starter_name,
@@ -103,7 +104,7 @@ async def createfakeposts(count):
             raise click.UsageError("No threads have been found in the database.")
 
         poster, poster_name = await get_random_poster(fake)
-        post = await create_fake_post(thread, poster=poster, poster_name=poster_name)
+        post = await create_fake_post(fake, thread, poster=poster, poster_name=poster_name)
         await thread.update(last_post=post, increment_replies=True)
 
         click.echo(f"- {post.poster_name} in thread #{thread.id}")
@@ -127,7 +128,7 @@ async def createfakeusers(count):
         click.echo(f"- {user.name} <{user.email}>")
 
 
-DATE_FORMAT = "%Y-%m-%d %H:%M-%S"
+DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
 @cli.add_command

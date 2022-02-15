@@ -2,6 +2,8 @@ import random
 from datetime import datetime
 from typing import Optional
 
+from faker import Faker
+
 from misago.categories.models import Category
 from misago.threads.models import Post, Thread
 from misago.users.models import User
@@ -14,6 +16,7 @@ sentences = Sentences(max_length=200)
 
 
 async def create_fake_post(
+    fake: Faker,
     thread: Thread,
     *,
     poster: Optional[User] = None,
@@ -24,7 +27,7 @@ async def create_fake_post(
 
     markup = "\n\n".join(texts)
 
-    rich_text = create_fake_rich_text()
+    rich_text = create_fake_rich_text(fake)
 
     return await Post.create(
         thread,
@@ -37,6 +40,7 @@ async def create_fake_post(
 
 
 async def create_fake_thread(
+    fake: Faker,
     category: Category,
     *,
     starter: Optional[User] = None,
@@ -45,7 +49,7 @@ async def create_fake_thread(
 ) -> Thread:
     thread = await Thread.create(
         category,
-        title=sentences.get_random_sentence(),
+        title=create_fake_title(fake),
         starter=starter,
         starter_name=starter_name,
         started_at=started_at,
@@ -53,9 +57,23 @@ async def create_fake_thread(
     )
 
     post = await create_fake_post(
-        thread, poster=starter, poster_name=starter_name, posted_at=thread.started_at
+        fake, thread, poster=starter, poster_name=starter_name, posted_at=thread.started_at
     )
 
     thread = await thread.update(first_post=post, last_post=post)
 
     return thread
+
+
+def create_fake_title(fake: Faker) -> str:
+    if random.randint(0, 100) > 90:
+        # Random chance for long sentence
+        return sentences.get_random_sentence()
+
+    if random.randint(0, 100) > 50:
+        return fake.sentence(nb_words=random.randint(3, 6)).rstrip(".")
+    
+    if random.randint(0, 100) > 50:
+        return fake.catch_phrase()
+
+    return fake.sentence(nb_words=random.randint(1, 5)).rstrip(".")

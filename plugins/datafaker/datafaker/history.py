@@ -21,11 +21,16 @@ from .users import create_fake_user
 async def create_fake_forum_history(
     fake: Faker, days: int, daily_actions: int
 ) -> AsyncGenerator[Union[Post, Thread, User], None]:
+    await Thread.query.delete_all()
+    await User.query.exclude(is_admin=True).delete()
+
     await move_existing_users_to_past(days)
 
     categories = await get_all_categories()
     if not categories:
         raise ValueError("No categories have been found.")
+
+    popular_threads = []
 
     start_date = timezone.now()
     for days_ago in reversed(range(days)):
@@ -33,24 +38,36 @@ async def create_fake_forum_history(
             action = random.randint(0, 100)
             if action >= 80:
                 yield await create_fake_user(fake, joined_at=action_date)
-            elif action > 50:
+            elif action > 60:
                 category = random.choice(categories)
                 starter, starter_name = await get_random_poster(fake)
 
-                yield await create_fake_thread(
+                thread = await create_fake_thread(
+                    fake,
                     category,
                     starter=starter,
                     starter_name=starter_name,
                     started_at=action_date,
                 )
+
+                if random.randint(0, 100) > 95:
+                    # Thread has 5% chance to be popular
+                    popular_threads.append(thread)
+
+                yield thread
             else:
-                thread = await get_random_thread()
-                if not thread:
-                    continue
+                if random.randint(0, 100) > 60 and popular_threads:
+                    # There's 40% chance new reply will be in a popular thread
+                    thread = random.choice(popular_threads)
+                else:
+                    thread = await get_random_thread()
+                    if not thread:
+                        continue
 
                 poster, poster_name = await get_random_poster(fake)
 
                 post = await create_fake_post(
+                    fake,
                     thread,
                     poster=poster,
                     poster_name=poster_name,

@@ -41,6 +41,8 @@ def get_fake_username(fake: Faker) -> str:
     ]
 
     username = random.choice(possible_usernames)
-    username += get_random_string(random.randint(2, 8))
+    if random.randint(0, 10) > 7:
+        # 30% chance username will have random suffix
+        username += get_random_string(random.randint(2, 8))
 
     return username
