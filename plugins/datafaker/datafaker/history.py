@@ -38,7 +38,7 @@ async def create_fake_forum_history(
             action = random.randint(0, 100)
             if action >= 80:
                 yield await create_fake_user(fake, joined_at=action_date)
-            elif action > 60:
+            elif action > 30:
                 category = random.choice(categories)
                 starter, starter_name = await get_random_poster(fake)
 
