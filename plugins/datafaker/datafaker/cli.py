@@ -18,7 +18,7 @@ from .users import create_fake_user
 
 @cli.add_command
 @click.command(short_help="Creates fake categories")
-@click.argument("count", default=1, type=int)
+@click.argument("count", default=1, type=click.INT)
 @uses_database
 async def createfakecategories(count):
     if count == 1:
@@ -38,7 +38,7 @@ async def createfakecategories(count):
 @click.command(short_help="Creates fake categories")
 @click.argument("count", default=1, type=int)
 @uses_database
-async def createfakechildcategories(count):
+async def createfakesubcategories(count):
     if count == 1:
         click.echo("Creating fake child category:")
     elif count > 1:
@@ -61,7 +61,7 @@ async def createfakechildcategories(count):
 @uses_database
 async def createfakethreads(count):
     if count == 1:
-        click.echo("Creating fake threads:")
+        click.echo("Creating fake thread:")
     elif count > 1:
         click.echo(f"Creating {count} fake threads:")
     else:

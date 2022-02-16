@@ -10,7 +10,7 @@ from .users import get_fake_username
 
 
 async def get_random_poster(fake: Faker) -> Tuple[Optional[User], Optional[str]]:
-    if random.randint(0, 100) > 80:
+    if random.randint(0, 100) > 90:
         return None, get_fake_username(fake)
 
     poster = await get_random_user()

@@ -7,7 +7,7 @@ from misago.utils.async_context import uses_database
 @cli.add_command
 @click.command(short_help="Setups categories on demo site")
 @uses_database
-async def createfakecategories(count):
+async def createdemocategories():
     click.echo("Creating categories")
 
     await Category.query.filter(type=CategoryType.THREADS).delete()

@@ -21,9 +21,6 @@ from .users import create_fake_user
 async def create_fake_forum_history(
     fake: Faker, days: int, daily_actions: int
 ) -> AsyncGenerator[Union[Post, Thread, User], None]:
-    await Thread.query.delete_all()
-    await User.query.exclude(is_admin=True).delete()
-
     await move_existing_users_to_past(days)
 
     categories = await get_all_categories()
