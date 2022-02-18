@@ -5,3 +5,6 @@
 [submodule "client"]
 	path = client
 	url = git@github.com:rafalp/misago-client.git
+[submodule "admin"]
+	path = admin
+	url = git@github.com:rafalp/misago-admin.git
