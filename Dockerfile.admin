@@ -1,0 +1,14 @@
+FROM node:16-slim
+
+ADD ./admin/ /admin/
+ADD ./plugins/ /admin/plugins/
+
+WORKDIR /admin/
+
+RUN npm install
+RUN ./bootstrap plugins
+RUN npm run build
+
+EXPOSE 3000
+
+CMD ./bootstrap start

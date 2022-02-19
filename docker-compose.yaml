@@ -2,6 +2,20 @@
 # This is not for running your Misago site in docker
 version: "3.0"
 services:
+  admin:
+    build:
+        context: .
+        dockerfile: Dockerfile.admin
+    ports:
+      # Map port 9000 in the container to port 9000 on the host
+      # This way we can access the admin panel through http://localhost:9000
+      - "${MISAGO_CLIENT_PORT:-9000}:9000"
+    tty: true
+    volumes:
+      # Map in the project files into the container
+      # This makes sure files in the container updates on the fly as we were working locally
+      - ./admin/src:/admin/src:Z
+      - ./plugins:/admin/plugins:Z
   client:
     build:
         context: .
