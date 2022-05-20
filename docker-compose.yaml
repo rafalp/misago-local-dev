@@ -6,10 +6,12 @@ services:
     build:
         context: .
         dockerfile: Dockerfile.admin
+    environment:
+      - REACT_APP_GRAPHQL_URL=http://localhost:8000/admin/graphql/
     ports:
       # Map port 9000 in the container to port 9000 on the host
       # This way we can access the admin panel through http://localhost:9000
-      - "${MISAGO_CLIENT_PORT:-9000}:9000"
+      - "${MISAGO_ADMIN_PORT:-9000}:9000"
     tty: true
     volumes:
       # Map in the project files into the container
@@ -20,6 +22,8 @@ services:
     build:
         context: .
         dockerfile: Dockerfile.client
+    environment:
+      - REACT_APP_GRAPHQL_URL=http://localhost:8000/graphql/
     ports:
       # Map port 3000 in the container to port 3000 on the host
       # This way we can access the forum client through http://localhost:3000
