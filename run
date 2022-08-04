@@ -88,7 +88,7 @@ intro() {
     echo
     echo "Shortcuts:"
     echo
-    echo "    ${BOLD}misagocli.py${NORMAL}      runs \"python misagocli.py\" inside docker."
+    echo "    ${BOLD}manage.py${NORMAL}         runs \"python manage.py\" inside docker."
     echo "    ${BOLD}bash${NORMAL}              starts bash session inside running Misago container."
     echo "    ${BOLD}run${NORMAL}               runs \"docker-compose run --rm misago\"."
     echo "    ${BOLD}psql${NORMAL}              runs psql connected to development database."
@@ -133,7 +133,7 @@ init_in_docker() {
     require_in_docker
     wait_for_db
     # migrate the database
-    python misagocli.py migrate
+    python manage.py migrate
     # create superuser Admin with password "password"
     # python manage.py createsuperuser --username $username --email $email --password $password
 
@@ -214,8 +214,8 @@ txpush() {
 }
 
 # Shortcut for docker-compose run --rm misago python manage.py
-run_misagoclipy() {
-    docker-compose run --rm misago python misagocli.py "${@:2}"
+run_managepy() {
+    docker-compose run --rm misago python manage.py "${@:2}"
 }
 
 # Shortcut for docker-compose run --rm misago...
@@ -286,8 +286,8 @@ if [[ $1 ]]; then
         txpull
     elif [[ $1 = "bash" ]]; then
         docker-compose run --rm misago bash
-    elif [[ $1 = "misagocli.py" ]]; then
-        run_misagoclipy $@
+    elif [[ $1 = "manage" ]]; then
+        run_managepy $@
     elif [[ $1 = "run" ]]; then
         docker_run $@
     elif [[ $1 = "psql" ]]; then
