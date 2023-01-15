@@ -62,11 +62,13 @@ intro() {
     echo
     echo "Development project:"
     echo
-    echo "    ${BOLD}init${NORMAL}              initialize dev database for development."
+    echo "    ${BOLD}init${NORMAL}              build all containers and initialize dev database for development."
+    echo "    ${BOLD}init_backend${NORMAL}      build only backend containers and initialize dev database for development."
     echo "    ${BOLD}afterinit${NORMAL}         repeat help message displayed after init command is complete."
     echo "    ${BOLD}clear${NORMAL}             clear media and userdata dirs and destroy docker containers."
     echo "    ${BOLD}rebuild${NORMAL}           rebuild docker containers."
-    echo "    ${BOLD}reset${NORMAL}             run clear followed by init."
+    echo "    ${BOLD}reset${NORMAL}             run clear and rebuild backend containers."
+    echo "    ${BOLD}reset_all${NORMAL}         run clear followed by init."
     echo
     echo "    Both init and rebuild args can be followed with any number of extra args and options that should be appended to docker-compose build."
     echo
@@ -88,6 +90,7 @@ intro() {
     echo
     echo "Shortcuts:"
     echo
+    echo "    ${BOLD}server${NORMAL}            runs \"docker-compose up misago\"."
     echo "    ${BOLD}manage.py${NORMAL}         runs \"python manage.py\" inside docker."
     echo "    ${BOLD}bash${NORMAL}              starts bash session inside running Misago container."
     echo "    ${BOLD}run${NORMAL}               runs \"docker-compose run --rm misago\"."
@@ -105,8 +108,8 @@ invalid_argument() {
     exit 1
 }
 
-# Initialize new dev project
-init() {
+# Initialize all containers for dev
+check_postgres_port() {
     for port in "${required_ports[@]}"; do
         nc "127.0.0.1" "$port" < /dev/null
         if [[ $? = "0" ]]; then
@@ -122,9 +125,20 @@ init() {
             exit 1
         fi
     done
-    
+}
+
+init_all() {
+    check_postgres_port
     docker-compose stop
-    docker-compose build --pull --force-rm "${@:2}"
+    docker-compose build --pull --force-rm
+    docker-compose run --rm misago ./bootstrap migrate
+}
+
+# Initialize backend containers
+init_backend() {
+    check_postgres_port
+    docker-compose stop
+    docker-compose build --pull --force-rm postgres redis misago
     docker-compose run --rm misago ./bootstrap migrate
 }
 
@@ -251,7 +265,9 @@ create_fake_bigdata() {
 # Command dispatcher
 if [[ $1 ]]; then
     if [[ $1 = "init" ]]; then
-        init $@
+        init_all
+    elif [[ $1 = "init_backend" ]]; then
+        init_backend
     elif [[ $1 = "init_in_docker" ]]; then
         init_in_docker
     elif [[ $1 = "afterinit" ]]; then
@@ -260,7 +276,10 @@ if [[ $1 ]]; then
         clear
     elif [[ $1 = "reset" ]]; then
         clear
-        init $@
+        init_backend
+    elif [[ $1 = "reset_all" ]]; then
+        clear
+        init_all
     elif [[ $1 = "rebuild" ]]; then
         rebuild $@
     elif [[ $1 = "test" ]]; then
@@ -290,6 +309,8 @@ if [[ $1 ]]; then
         run_managepy $@
     elif [[ $1 = "run" ]]; then
         docker_run $@
+    elif [[ $1 = "server" ]]; then
+        docker-compose up misago
     elif [[ $1 = "psql" ]]; then
         run_psql
     elif [[ $1 = "psql_in_docker" ]]; then
